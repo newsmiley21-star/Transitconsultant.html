@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transit Pro Gabon - Authentification Sécurisée</title>
+    <title>Transit Pro Gabon - Version Intégrale</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -16,303 +16,215 @@
         .input-pro:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
         .card-shadow { box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); }
         .doc-preview { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0; }
-        
-        /* Animation de chargement */
-        .loader { border-top-color: #3b82f6; animation: spinner 0.6s linear infinite; }
-        @keyframes spinner { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="min-h-screen pb-20">
 
-    <!-- ÉCRAN DE VERROUILLAGE (LOGIN) -->
-    <div id="auth-screen" class="fixed inset-0 bg-slate-900 z-[200] flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-[2.5rem] p-10 shadow-2xl text-center">
-            <div class="bg-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-200">
-                <i data-lucide="shield-check" class="text-white w-8 h-8"></i>
+    <!-- Navigation -->
+    <nav class="bg-slate-900 text-white p-4 shadow-2xl sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 p-2 rounded-xl shadow-inner">
+                    <i data-lucide="anchor" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="font-black text-xl tracking-tighter uppercase italic leading-none">Transit<span class="text-blue-500">Pro</span></h1>
+                    <p class="text-[9px] uppercase tracking-[0.2em] font-bold text-slate-400 mt-1">Gabon Logistique 2026</p>
+                </div>
             </div>
-            <h2 class="font-black text-2xl uppercase tracking-tighter italic">Transit<span class="text-blue-600">Pro</span></h2>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2 mb-8">Portail Agent Gabon</p>
-            
-            <form id="login-form" onsubmit="handleAuth(event)" class="space-y-4 text-left">
-                <div>
-                    <label class="form-label">E-mail Professionnel</label>
-                    <div class="relative">
-                        <i data-lucide="mail" class="absolute left-3 top-3.5 w-4 h-4 text-slate-400"></i>
-                        <input type="email" id="auth-email" required placeholder="nom@entreprise.ga" class="input-pro pl-10 font-semibold">
-                    </div>
-                </div>
-                <div>
-                    <label class="form-label">Mot de passe</label>
-                    <div class="relative">
-                        <i data-lucide="key-round" class="absolute left-3 top-3.5 w-4 h-4 text-slate-400"></i>
-                        <input type="password" id="auth-password" required placeholder="••••••••" class="input-pro pl-10">
-                    </div>
-                </div>
-                
-                <button type="submit" class="w-full bg-slate-900 hover:bg-blue-600 text-white font-black py-4 rounded-2xl transition-all uppercase text-xs tracking-widest flex justify-center items-center gap-2 mt-4 shadow-xl">
-                    Se Connecter <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                </button>
-                
-                <p id="auth-error" class="hidden text-rose-500 text-[9px] font-black uppercase text-center mt-4 italic">Identifiants incorrects ou accès non autorisé.</p>
-            </form>
-            
-            <div class="mt-10 pt-6 border-t border-slate-100 flex justify-between items-center">
-                <p class="text-[8px] font-bold text-slate-300 uppercase italic">Version 2.0.4 • 2026</p>
-                <div class="flex gap-2">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span class="text-[8px] font-bold text-slate-400 uppercase">Serveur GALBV Actif</span>
-                </div>
+            <div class="hidden md:block text-right">
+                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Bureau de Douane</p>
+                <p class="text-xs font-bold text-blue-400 uppercase">Owendo Port (GALBV)</p>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <!-- APPLICATION PRINCIPALE -->
-    <div id="app-content" class="hidden">
-        <!-- Navigation -->
-        <nav class="bg-slate-900 text-white p-4 shadow-2xl sticky top-0 z-50">
-            <div class="max-w-6xl mx-auto flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="bg-blue-600 p-2 rounded-xl shadow-inner">
-                        <i data-lucide="anchor" class="w-5 h-5 text-white"></i>
+    <main class="max-w-5xl mx-auto mt-6 px-4">
+        
+        <!-- Onglets -->
+        <div class="flex bg-slate-200/50 p-1 rounded-2xl mb-8 card-shadow border border-slate-200/60">
+            <button onclick="switchTab('simulator')" id="tab-simulator" class="flex-1 py-3.5 font-bold text-slate-500 rounded-xl transition-all tab-active flex justify-center items-center gap-2">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i> Nouveau Dossier
+            </button>
+            <button onclick="switchTab('missions')" id="tab-missions" class="flex-1 py-3.5 font-bold text-slate-500 rounded-xl transition-all flex justify-center items-center gap-2">
+                <i data-lucide="activity" class="w-4 h-4"></i> Missions Actives
+            </button>
+            <button onclick="switchTab('archive')" id="tab-archive" class="flex-1 py-3.5 font-bold text-slate-500 rounded-xl transition-all flex justify-center items-center gap-2">
+                <i data-lucide="archive" class="w-4 h-4"></i> Historique
+            </button>
+        </div>
+
+        <!-- SECTION : SIMULATEUR -->
+        <section id="section-simulator" class="space-y-6">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    <!-- CLIENT & CONTACT -->
+                    <div class="space-y-5">
+                        <h3 class="flex items-center gap-2 text-[11px] font-black text-blue-600 uppercase tracking-widest border-b pb-3">
+                            <i data-lucide="user-check" class="w-4 h-4"></i> Informations Client
+                        </h3>
+                        <div>
+                            <label class="form-label">Nom / Raison Sociale</label>
+                            <input type="text" id="client-name" placeholder="Ex: SOGADA Gabon" class="input-pro font-bold">
+                        </div>
+                        <div>
+                            <label class="form-label">NIF (Identifiant Fiscal)</label>
+                            <input type="text" id="client-nif" placeholder="Format: 700000Z" class="input-pro uppercase font-mono">
+                        </div>
+                        <div>
+                            <label class="form-label">Téléphone / WhatsApp</label>
+                            <input type="tel" id="client-tel" placeholder="+241 06 00 00 00" class="input-pro">
+                        </div>
                     </div>
-                    <div>
-                        <h1 class="font-black text-xl tracking-tighter uppercase italic leading-none">Transit<span class="text-blue-500">Pro</span></h1>
-                        <p class="text-[9px] uppercase tracking-[0.2em] font-bold text-slate-400 mt-1">Gabon Logistique 2026</p>
+
+                    <!-- LOGISTIQUE -->
+                    <div class="space-y-5">
+                        <h3 class="flex items-center gap-2 text-[11px] font-black text-emerald-600 uppercase tracking-widest border-b pb-3">
+                            <i data-lucide="ship" class="w-4 h-4"></i> Détails Logistiques
+                        </h3>
+                        <div>
+                            <label class="form-label">Compagnie / Transporteur</label>
+                            <select id="vessel" class="input-pro font-bold">
+                                <optgroup label="MARITIME">
+                                    <option value="CMA CGM">CMA CGM</option>
+                                    <option value="Maersk">Maersk Line</option>
+                                    <option value="MSC">MSC Gabon</option>
+                                    <option value="Grimaldi">Grimaldi Lines</option>
+                                </optgroup>
+                                <optgroup label="AÉRIEN">
+                                    <option value="Sky Gabon">Sky Gabon</option>
+                                    <option value="DHL">DHL Express</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Réf. BL / LTA / Conteneur</label>
+                            <input type="text" id="ref-log" placeholder="ZIMU / MAEU..." class="input-pro uppercase font-mono">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="form-label">Colis</label>
+                                <input type="number" id="qty" placeholder="0" class="input-pro">
+                            </div>
+                            <div>
+                                <label class="form-label">Poids (kg)</label>
+                                <input type="number" id="weight" placeholder="0" class="input-pro">
+                            </div>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-xl border border-dashed border-slate-300 flex justify-around">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="mode" value="SEA" checked class="w-4 h-4">
+                                <span class="text-[10px] font-black text-slate-600 uppercase">Maritime</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="mode" value="AIR" class="w-4 h-4">
+                                <span class="text-[10px] font-black text-slate-600 uppercase">Aérien</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- DOUANE -->
+                    <div class="space-y-5">
+                        <h3 class="flex items-center gap-2 text-[11px] font-black text-orange-600 uppercase tracking-widest border-b pb-3">
+                            <i data-lucide="calculator" class="w-4 h-4"></i> Calcul Douane (CEMAC)
+                        </h3>
+                        <div>
+                            <label class="form-label">Valeur CFR (FCFA)</label>
+                            <input type="number" id="cfr-value" placeholder="Montant Facture + Fret" class="input-pro text-blue-700 font-black text-lg">
+                        </div>
+                        <div>
+                            <label class="form-label">Catégorie Tarifaire CEMAC</label>
+                            <select id="category" class="input-pro font-bold">
+                                <optgroup label="CATÉGORIE 1 (5%)">
+                                    <option value="sante">Santé & Médicaments (5%)</option>
+                                    <option value="livres">Éducation & Livres (5%)</option>
+                                </optgroup>
+                                <optgroup label="CATÉGORIE 2 (10%)">
+                                    <option value="machines">Machines & Équipements (10%)</option>
+                                    <option value="matieres">Matières Premières (10%)</option>
+                                </optgroup>
+                                <optgroup label="CATÉGORIE 3 (20%)">
+                                    <option value="pieces">Pièces Détachées / Divers (20%)</option>
+                                    <option value="alimentation">Alimentation (20%)</option>
+                                </optgroup>
+                                <optgroup label="CATÉGORIE 4 (30%)">
+                                    <option value="electromenager">Électroménager (30%)</option>
+                                    <option value="vehicules">Véhicules de Tourisme (30%)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Pays de Provenance</label>
+                            <input type="text" id="origin" placeholder="Ex: France, Chine, UAE" class="input-pro">
+                        </div>
                     </div>
                 </div>
-                <div class="flex items-center gap-4">
-                    <div class="hidden md:block text-right">
-                        <p id="user-display-email" class="text-[10px] font-black text-blue-400 uppercase tracking-widest"></p>
-                        <p id="user-role-tag" class="text-[9px] font-bold text-slate-500 uppercase italic"></p>
-                    </div>
-                    <button onclick="logout()" class="p-2 hover:bg-slate-800 rounded-xl text-slate-400 transition-colors">
-                        <i data-lucide="log-out" class="w-5 h-5"></i>
+
+                <div class="mt-8 pt-8 border-t flex flex-col md:flex-row gap-4">
+                    <button onclick="calculateOnly()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black py-4 rounded-2xl transition-all flex justify-center items-center gap-3 uppercase text-[10px] tracking-widest">
+                        <i data-lucide="eye"></i> Aperçu Rapide
+                    </button>
+                    <button onclick="createMission()" class="flex-[2] bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl shadow-xl shadow-blue-200 flex justify-center items-center gap-3 transition-all uppercase text-[10px] tracking-widest">
+                        <i data-lucide="save"></i> Créer la Mission
                     </button>
                 </div>
             </div>
-        </nav>
 
-        <main class="max-w-5xl mx-auto mt-6 px-4">
-            <!-- Onglets -->
-            <div class="flex bg-slate-200/50 p-1 rounded-2xl mb-8 card-shadow border border-slate-200/60">
-                <button onclick="switchTab('simulator')" id="tab-simulator" class="flex-1 py-3.5 font-bold text-slate-500 rounded-xl transition-all tab-active flex justify-center items-center gap-2">
-                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Nouveau Dossier
-                </button>
-                <button onclick="switchTab('missions')" id="tab-missions" class="flex-1 py-3.5 font-bold text-slate-500 rounded-xl transition-all flex justify-center items-center gap-2">
-                    <i data-lucide="activity" class="w-4 h-4"></i> Missions Actives
-                </button>
-                <button onclick="switchTab('archive')" id="tab-archive" class="flex-1 py-3.5 font-bold text-slate-500 rounded-xl transition-all flex justify-center items-center gap-2">
-                    <i data-lucide="archive" class="w-4 h-4"></i> Historique
-                </button>
+            <!-- RÉSULTATS DÉTAILLÉS -->
+            <div id="quick-res" class="hidden bg-slate-900 rounded-3xl p-8 shadow-2xl border border-slate-800 animate-in fade-in duration-500">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div class="text-center md:text-left">
+                        <p id="res-cat-label" class="text-blue-500 font-bold text-[10px] uppercase tracking-[0.2em] mb-2">CATÉGORIE --</p>
+                        <h3 id="quick-tax" class="text-5xl font-black tracking-tighter text-white leading-none">0 FCFA</h3>
+                        <p class="text-slate-500 text-[10px] font-bold mt-4 uppercase">Total Estimation (DD + TVA + RS + SYDONIA)</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-x-12 gap-y-4 text-[10px] font-bold text-slate-500 border-t md:border-t-0 md:border-l border-slate-800 pt-6 md:pt-0 md:pl-12">
+                        <div>DROITS DOUANE (DD): <span id="res-dd" class="text-white block font-mono text-xs mt-1">--</span></div>
+                        <div>TVA (18%): <span id="res-tva" class="text-white block font-mono text-xs mt-1">--</span></div>
+                        <div>REDEVANCE STAT. (1.5%): <span id="res-rs" class="text-white block font-mono text-xs mt-1">--</span></div>
+                        <div>SYDONIA / PHS: <span id="res-sys" class="text-white block font-mono text-xs mt-1">--</span></div>
+                    </div>
+                </div>
             </div>
+        </section>
 
-            <!-- SECTION : SIMULATEUR -->
-            <section id="section-simulator" class="space-y-6">
-                <!-- (Contenu du simulateur identique à la version précédente) -->
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <!-- CLIENT & CONTACT -->
-                        <div class="space-y-5">
-                            <h3 class="flex items-center gap-2 text-[11px] font-black text-blue-600 uppercase tracking-widest border-b pb-3">
-                                <i data-lucide="user-check" class="w-4 h-4"></i> Informations Client
-                            </h3>
-                            <div>
-                                <label class="form-label">Nom / Raison Sociale</label>
-                                <input type="text" id="client-name" placeholder="Ex: SOGADA Gabon" class="input-pro font-bold">
-                            </div>
-                            <div>
-                                <label class="form-label">NIF (Identifiant Fiscal)</label>
-                                <input type="text" id="client-nif" placeholder="700000Z" class="input-pro uppercase font-mono">
-                            </div>
-                            <div>
-                                <label class="form-label">Téléphone</label>
-                                <input type="tel" id="client-tel" placeholder="+241 06..." class="input-pro">
-                            </div>
-                        </div>
+        <!-- SECTION : MISSIONS -->
+        <section id="section-missions" class="hidden space-y-6">
+            <div id="list-active" class="grid grid-cols-1 gap-4"></div>
+        </section>
 
-                        <!-- LOGISTIQUE -->
-                        <div class="space-y-5">
-                            <h3 class="flex items-center gap-2 text-[11px] font-black text-emerald-600 uppercase tracking-widest border-b pb-3">
-                                <i data-lucide="ship" class="w-4 h-4"></i> Détails Logistiques
-                            </h3>
-                            <div>
-                                <label class="form-label">Compagnie / Transporteur</label>
-                                <select id="vessel" class="input-pro font-bold">
-                                    <optgroup label="MARITIME">
-                                        <option value="CMA CGM">CMA CGM</option>
-                                        <option value="Maersk">Maersk Line</option>
-                                        <option value="MSC">MSC Gabon</option>
-                                    </optgroup>
-                                    <optgroup label="AÉRIEN">
-                                        <option value="Sky Gabon">Sky Gabon</option>
-                                        <option value="DHL">DHL Express</option>
-                                    </optgroup>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="form-label">Réf. BL / Conteneur</label>
-                                <input type="text" id="ref-log" placeholder="ZIMU / MAEU..." class="input-pro uppercase font-mono">
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="form-label">Colis</label>
-                                    <input type="number" id="qty" placeholder="0" class="input-pro">
-                                </div>
-                                <div>
-                                    <label class="form-label">Poids (kg)</label>
-                                    <input type="number" id="weight" placeholder="0" class="input-pro">
-                                </div>
-                            </div>
-                            <div class="p-3 bg-slate-50 rounded-xl border border-dashed border-slate-300 flex justify-around">
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="radio" name="mode" value="SEA" checked class="w-4 h-4">
-                                    <span class="text-[10px] font-black text-slate-600 uppercase">Maritime</span>
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="radio" name="mode" value="AIR" class="w-4 h-4">
-                                    <span class="text-[10px] font-black text-slate-600 uppercase">Aérien</span>
-                                </label>
-                            </div>
-                        </div>
+        <!-- SECTION : ARCHIVE -->
+        <section id="section-archive" class="hidden space-y-6">
+            <div id="list-archive" class="grid grid-cols-1 gap-4 opacity-70"></div>
+        </section>
+    </main>
 
-                        <!-- DOUANE -->
-                        <div class="space-y-5">
-                            <h3 class="flex items-center gap-2 text-[11px] font-black text-orange-600 uppercase tracking-widest border-b pb-3">
-                                <i data-lucide="calculator" class="w-4 h-4"></i> Calcul Douane
-                            </h3>
-                            <div>
-                                <label class="form-label">Valeur CFR (FCFA)</label>
-                                <input type="number" id="cfr-value" placeholder="Facture + Fret" class="input-pro text-blue-700 font-black text-lg">
-                            </div>
-                            <div>
-                                <label class="form-label">Catégorie CEMAC</label>
-                                <select id="category" class="input-pro font-bold">
-                                    <option value="machines">Machines (10%)</option>
-                                    <option value="pieces">Divers (20%)</option>
-                                    <option value="vehicules">Véhicules (30%)</option>
-                                    <option value="sante">Santé (5%)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="form-label">Provenance</label>
-                                <input type="text" id="origin" placeholder="Pays d'origine" class="input-pro">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-8 pt-8 border-t flex flex-col md:flex-row gap-4">
-                        <button onclick="calculateOnly()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black py-4 rounded-2xl transition-all flex justify-center items-center gap-3 uppercase text-[10px] tracking-widest">
-                            <i data-lucide="eye"></i> Aperçu Rapide
-                        </button>
-                        <button onclick="createMission()" class="flex-[2] bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl shadow-xl shadow-blue-200 flex justify-center items-center gap-3 transition-all uppercase text-[10px] tracking-widest">
-                            <i data-lucide="save"></i> Créer la Mission
-                        </button>
-                    </div>
-                </div>
-
-                <!-- RÉSULTATS DÉTAILLÉS -->
-                <div id="quick-res" class="hidden bg-slate-900 rounded-3xl p-8 shadow-2xl border border-slate-800 animate-in fade-in duration-500">
-                    <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-                        <div class="text-center md:text-left">
-                            <p id="res-cat-label" class="text-blue-500 font-bold text-[10px] uppercase tracking-[0.2em] mb-2">CATÉGORIE --</p>
-                            <h3 id="quick-tax" class="text-5xl font-black tracking-tighter text-white leading-none">0 FCFA</h3>
-                            <p class="text-slate-500 text-[10px] font-bold mt-4 uppercase italic">Estimation de liquidation douanière</p>
-                        </div>
-                        <div class="grid grid-cols-2 gap-x-12 gap-y-4 text-[10px] font-bold text-slate-500 border-t md:border-t-0 md:border-l border-slate-800 pt-6 md:pt-0 md:pl-12">
-                            <div>DROITS DOUANE: <span id="res-dd" class="text-white block font-mono text-xs mt-1">--</span></div>
-                            <div>TVA (18%): <span id="res-tva" class="text-white block font-mono text-xs mt-1">--</span></div>
-                            <div>RED. STAT. (1.5%): <span id="res-rs" class="text-white block font-mono text-xs mt-1">--</span></div>
-                            <div>SYDONIA: <span id="res-sys" class="text-white block font-mono text-xs mt-1">--</span></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION : MISSIONS -->
-            <section id="section-missions" class="hidden space-y-6">
-                <div id="list-active" class="grid grid-cols-1 gap-4"></div>
-            </section>
-
-            <!-- SECTION : ARCHIVE -->
-            <section id="section-archive" class="hidden space-y-6">
-                <div id="list-archive" class="grid grid-cols-1 gap-4 opacity-70"></div>
-            </section>
-        </main>
-    </div>
-
-    <!-- Modals -->
+    <!-- Modal Pièces Jointes -->
     <div id="modal-docs" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-        <!-- (Modal contenu identique) -->
         <div class="bg-white w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl">
             <div class="p-6 bg-slate-50 border-b flex justify-between items-center">
-                <h3 class="font-black text-slate-900 uppercase text-xs tracking-widest">Documents Annexés</h3>
+                <div>
+                    <h3 class="font-black text-slate-900 uppercase text-xs tracking-widest">Dossier Numérique</h3>
+                    <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">Stockage ultra-compressé WebP</p>
+                </div>
                 <button onclick="closeDocs()" class="text-slate-400 hover:text-slate-900"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="p-6 space-y-4">
                 <div class="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center hover:bg-slate-50 transition-all cursor-pointer relative group">
                     <input type="file" id="file-input" multiple accept="image/*,application/pdf" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleFiles(this)">
-                    <i data-lucide="upload-cloud" class="w-10 h-10 text-blue-500 mx-auto mb-2"></i>
-                    <p class="text-xs font-bold text-slate-600">Glisser-déposer vos fichiers ici</p>
+                    <i data-lucide="upload-cloud" class="w-10 h-10 text-blue-500 mx-auto mb-2 group-hover:scale-110 transition-transform"></i>
+                    <p class="text-xs font-bold text-slate-600">Ajouter des documents (Images/PDF)</p>
+                    <p class="text-[9px] text-slate-400 mt-2 uppercase font-black tracking-tighter">Facture, BL, Liste de Colisage...</p>
                 </div>
-                <div id="doc-list" class="space-y-2 max-h-64 overflow-y-auto pr-2"></div>
+                <div id="doc-list" class="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                    <!-- Liste documents -->
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- BASE DE DONNÉES UTILISATEURS SIMULÉE ---
-        // Seuls ces couples d'identifiants sont autorisés
-        const AUTH_DB = [
-            { email: "logistique@transitpro.ga", password: "log", role: "Logistique" },
-            { email: "transit@transitpro.ga", password: "tra", role: "Agent Transit" },
-            { email: "douane@transitpro.ga", password: "dou", role: "Inspecteur Douane" }
-        ];
-        
-        function handleAuth(event) {
-            event.preventDefault();
-            const emailInput = document.getElementById('auth-email').value.toLowerCase().trim();
-            const passInput = document.getElementById('auth-password').value;
-            const errorMsg = document.getElementById('auth-error');
-            
-            // Vérification dans la DB simulée
-            const user = AUTH_DB.find(u => u.email === emailInput && u.password === passInput);
-            
-            if (user) {
-                // Stockage sécurisé pour la session actuelle (disparait à la fermeture de l'onglet)
-                sessionStorage.setItem('transit_pro_user', JSON.stringify({
-                    email: user.email,
-                    role: user.role,
-                    timestamp: Date.now()
-                }));
-                showApp();
-            } else {
-                errorMsg.classList.remove('hidden');
-                document.querySelectorAll('.input-pro').forEach(el => el.classList.add('border-rose-500'));
-                setTimeout(() => {
-                    errorMsg.classList.add('hidden');
-                    document.querySelectorAll('.input-pro').forEach(el => el.classList.remove('border-rose-500'));
-                }, 3000);
-            }
-        }
-
-        function showApp() {
-            const userData = JSON.parse(sessionStorage.getItem('transit_pro_user'));
-            if (userData) {
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('app-content').classList.remove('hidden');
-                document.getElementById('user-display-email').innerText = userData.email;
-                document.getElementById('user-role-tag').innerText = "Rôle: " + userData.role;
-                lucide.createIcons();
-                render();
-            }
-        }
-
-        function logout() {
-            sessionStorage.removeItem('transit_pro_user');
-            location.reload();
-        }
-
-        // --- LOGIQUE MÉTIER ---
         const CONFIG = {
             sante: { dd: 0.05, label: "SANTÉ (5%)" },
             livres: { dd: 0.05, label: "ÉDUCATION (5%)" },
@@ -327,19 +239,12 @@
         let missions = JSON.parse(localStorage.getItem('transit_gabon_vfinal')) || [];
         let activeMissionId = null;
 
-        window.onload = () => { 
-            lucide.createIcons(); 
-            if (sessionStorage.getItem('transit_pro_user')) {
-                showApp();
-            }
-        };
+        window.onload = () => { lucide.createIcons(); render(); };
 
         function switchTab(t) {
             ['simulator', 'missions', 'archive'].forEach(id => {
-                const sec = document.getElementById('section-'+id);
-                const tab = document.getElementById('tab-'+id);
-                if(sec) sec.classList.add('hidden');
-                if(tab) tab.classList.remove('tab-active');
+                document.getElementById('section-'+id).classList.add('hidden');
+                document.getElementById('tab-'+id).classList.remove('tab-active');
             });
             document.getElementById('section-'+t).classList.remove('hidden');
             document.getElementById('tab-'+t).classList.add('tab-active');
@@ -348,11 +253,12 @@
 
         function getTaxes(cfr, cat) {
             const c = CONFIG[cat] || CONFIG.pieces;
-            const caf = cfr * 1.01;
+            const caf = cfr * 1.01; // Simulation Fret/Assurance (1%)
             const dd = caf * c.dd;
             const rs = caf * 0.015;
             const tva = (caf + dd + rs) * 0.18;
-            const sys = 35000;
+            const sys = 35000; // Frais Sydonia + PHS forfaitaires
+            
             return {
                 total: Math.round(dd + rs + tva + sys),
                 dd_v: Math.round(dd),
@@ -381,7 +287,7 @@
         function createMission() {
             const client = document.getElementById('client-name').value;
             const val = parseFloat(document.getElementById('cfr-value').value);
-            if (!client || !val) return;
+            if (!client || !val) return alert("Remplissez au moins le nom du client et la valeur.");
 
             missions.push({
                 id: Date.now(),
@@ -404,8 +310,17 @@
             switchTab('missions');
         }
 
-        function openDocs(id) { activeMissionId = id; document.getElementById('modal-docs').classList.remove('hidden'); renderDocs(); }
-        function closeDocs() { document.getElementById('modal-docs').classList.add('hidden'); activeMissionId = null; }
+        // --- GESTION DES DOCUMENTS ---
+        function openDocs(id) {
+            activeMissionId = id;
+            document.getElementById('modal-docs').classList.remove('hidden');
+            renderDocs();
+        }
+
+        function closeDocs() {
+            document.getElementById('modal-docs').classList.add('hidden');
+            activeMissionId = null;
+        }
 
         async function handleFiles(input) {
             const files = Array.from(input.files);
@@ -453,18 +368,20 @@
             const mission = missions.find(m => m.id === activeMissionId);
             list.innerHTML = "";
             if (!mission.docs.length) {
-                list.innerHTML = `<p class="text-center text-[10px] text-slate-400 py-6 font-bold uppercase tracking-widest">Aucun document</p>`;
+                list.innerHTML = `<p class="text-center text-[10px] text-slate-400 py-6 font-bold uppercase tracking-widest">Aucun document attaché</p>`;
                 return;
             }
             mission.docs.forEach((doc, idx) => {
                 list.innerHTML += `
-                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-100 group">
+                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-100 group animate-in slide-in-from-right-2">
                         ${doc.type === 'image' ? `<img src="${doc.data}" class="doc-preview">` : `<div class="w-10 h-10 bg-red-100 text-red-600 flex items-center justify-center rounded-lg"><i data-lucide="file-text" class="w-5 h-5"></i></div>`}
                         <div class="flex-1 overflow-hidden">
                             <p class="text-[10px] font-black text-slate-700 truncate uppercase">${doc.name}</p>
-                            <p class="text-[8px] text-slate-400 font-bold italic">Numérisé</p>
+                            <p class="text-[8px] text-slate-400 font-bold">${Math.round(doc.data.length / 1024)} KB • OPTIMISÉ</p>
                         </div>
-                        <button onclick="removeDoc(${idx})" class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        <div class="flex gap-1">
+                            <button onclick="removeDoc(${idx})" class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
                     </div>
                 `;
             });
@@ -485,7 +402,6 @@
         function render() {
             const act = document.getElementById('list-active');
             const arc = document.getElementById('list-archive');
-            if(!act || !arc) return;
             act.innerHTML = ""; arc.innerHTML = "";
 
             missions.forEach(m => {
@@ -502,7 +418,7 @@
                                     <h4 class="font-black text-slate-900 uppercase text-sm">${m.client}</h4>
                                     <span class="text-[8px] font-black bg-slate-100 text-slate-500 px-2 py-0.5 rounded">NIF: ${m.nif}</span>
                                 </div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${m.carrier} • ${m.ref}</p>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${m.carrier} • ${m.ref} • ${m.origin}</p>
                             </div>
                             <div class="flex items-center gap-5">
                                 <button onclick="openDocs(${m.id})" class="relative p-2.5 bg-slate-100 hover:bg-blue-100 text-slate-600 hover:text-blue-600 rounded-xl transition-all">
@@ -515,14 +431,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="bg-slate-50 px-6 py-3 border-t border-slate-100 flex justify-between items-center text-[9px]">
+                        <div class="bg-slate-50 px-6 py-3 border-t border-slate-100 flex justify-between items-center">
                             <div class="flex items-center gap-3">
                                 ${getStatusBadge(m.status)}
-                                <span class="font-bold text-slate-400 uppercase">${m.date}</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase">${m.date}</span>
                             </div>
                             <div class="flex gap-2">
                                 ${m.status !== 'fini' ? `
-                                    <button onclick="setStatus(${m.id}, 'douane')" class="px-4 py-1.5 bg-slate-900 text-white rounded-xl font-black uppercase hover:bg-blue-600 transition-colors">En Douane</button>
+                                    <button onclick="setStatus(${m.id}, 'douane')" class="px-4 py-1.5 bg-slate-900 text-white rounded-xl text-[9px] font-black uppercase hover:bg-blue-600 transition-colors">Douane</button>
                                     <button onclick="setStatus(${m.id}, 'fini')" class="p-1.5 bg-emerald-100 text-emerald-600 rounded-xl hover:bg-emerald-200 transition-colors"><i data-lucide="check" class="w-4 h-4"></i></button>
                                 ` : `
                                     <button onclick="deleteM(${m.id})" class="p-1.5 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-100 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
@@ -538,9 +454,9 @@
         }
 
         function getStatusBadge(s) {
-            if(s === 'init') return '<span class="status-badge bg-amber-50 text-amber-600 border-amber-200 font-black">Ouvert</span>';
-            if(s === 'douane') return '<span class="status-badge bg-blue-100 text-blue-600 border-blue-200 font-black animate-pulse">Inspection</span>';
-            return '<span class="status-badge bg-slate-200 text-slate-500 border-slate-300 font-black">Archives</span>';
+            if(s === 'init') return '<span class="status-badge bg-amber-50 text-amber-600 border-amber-200">Ouvert</span>';
+            if(s === 'douane') return '<span class="status-badge bg-blue-100 text-blue-600 border-blue-200 animate-pulse">En Douane</span>';
+            return '<span class="status-badge bg-slate-200 text-slate-500 border-slate-300">Clôturé</span>';
         }
     </script>
 </body>
