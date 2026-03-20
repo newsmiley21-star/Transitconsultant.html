@@ -284,7 +284,7 @@
     <script>
         // LOGIQUE DE VERROUILLAGE
         let currentPin = "";
-        const TARGET_PIN = "1234";
+        const TARGET_PIN = "6122";
 
         function pressPin(num) {
             if (currentPin.length < 4) {
